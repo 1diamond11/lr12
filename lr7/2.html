@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Погода в Сонгнам-си</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: url('weather.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .page {
+      display: flex;
+      gap: 20px;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .forecast {
+      width: 250px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 10px;
+      padding: 15px;
+      backdrop-filter: blur(5px);
+    }
+
+    .forecast__title {
+      font-size: 14px;
+      opacity: 0.8;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .forecast__item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .forecast__item:last-child {
+      border-bottom: none;
+    }
+
+    .forecast__day {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .forecast__icon {
+      font-size: 24px;
+    }
+
+    .forecast__temps {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .forecast__temp-high {
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .forecast__temp-low {
+      font-size: 14px;
+      opacity: 0.7;
+    }
+
+    .forecast__bar {
+      height: 4px;
+      width: 60px;
+      background: linear-gradient(to right, #4CAF50, #FFC107, #FF5722);
+      border-radius: 2px;
+    }
+
+    .forecast__precip {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+
+    .current-weather {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 30px;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 10px;
+      backdrop-filter: blur(5px);
+    }
+
+    .current-weather__location {
+      font-size: 28px;
+      font-weight: 300;
+    }
+
+    .current-weather__temperature {
+      font-size: 72px;
+      font-weight: 300;
+      line-height: 1;
+    }
+
+    .current-weather__condition {
+      font-size: 18px;
+      opacity: 0.9;
+    }
+
+    .current-weather__hilo {
+      font-size: 16px;
+      opacity: 0.8;
+    }
+
+    .hourly {
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 20px;
+      backdrop-filter: blur(5px);
+    }
+
+    .hourly__summary {
+      font-size: 14px;
+      opacity: 0.8;
+      margin-bottom: 15px;
+    }
+
+    .hourly__list {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      overflow-x: auto;
+    }
+
+    .hourly__item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px;
+      min-width: 70px;
+      text-align: center;
+    }
+
+    .hourly__time {
+      font-size: 14px;
+      opacity: 0.8;
+      margin-bottom: 8px;
+    }
+
+    .hourly__icon {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .hourly__temp {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    /* Адаптив */
+    @media (max-width: 768px) {
+      .page {
+        flex-direction: column;
+        padding: 10px;
+      }
+
+      .forecast {
+        width: 100%;
+        margin-bottom: 20px;
+      }
+
+      .current-weather {
+        padding: 20px 15px;
+      }
+
+      .current-weather__location {
+        font-size: 22px;
+      }
+
+      .current-weather__temperature {
+        font-size: 56px;
+      }
+
+      .hourly__list {
+        flex-wrap: nowrap;
+        gap: 10px;
+      }
+
+      .hourly__item {
+        min-width: 60px;
+        padding: 8px;
+      }
+
+      .hourly__time {
+        font-size: 12px;
+      }
+
+      .hourly__temp {
+        font-size: 16px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .forecast__item {
+        padding: 8px 0;
+      }
+
+      .forecast__temp-high {
+        font-size: 14px;
+      }
+
+      .forecast__temp-low {
+        font-size: 12px;
+      }
+
+      .forecast__bar {
+        width: 40px;
+      }
+
+      .hourly__item {
+        min-width: 50px;
+        padding: 5px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <aside class="forecast">
+      <h2 class="forecast__title">📅 10-DAY FORECAST</h2>
+
+      <div class="forecast__item forecast__item--today">
+        <div class="forecast__day">
+          <span class="forecast__icon">☀️</span>
+          <span class="forecast__label">Today</span>
+        </div>
+        <div class="forecast__temps">
+          <span class="forecast__temp-high">29°</span>
+          <div class="forecast__bar"></div>
+          <span class="forecast__temp-low">15°</span>
+        </div>
+      </div>
+
+      <div class="forecast__item">
+        <div class="forecast__day">
+          <span class="forecast__icon">🌧️</span>
+          <span class="forecast__label">Mon</span>
+        </div>
+        <div class="forecast__temps">
+          <span class="forecast__temp-high">27°</span>
+          <div class="forecast__bar"></div>
+          <span class="forecast__temp-low">18°</span>
+        </div>
+        <span class="forecast__precip">60%</span>
+      </div>
+
+      <div class="forecast__item">
+        <div class="forecast__day">
+          <span class="forecast__icon">🌧️</span>
+          <span class="forecast__label">Tue</span>
+        </div>
+        <div class="forecast__temps">
+          <span class="forecast__temp-high">25°</span>
+          <div class="forecast__bar"></div>
+          <span class="forecast__temp-low">20°</span>
+        </div>
+        <span class="forecast__precip">60%</span>
+      </div>
+
+      <div class="forecast__item">
+        <div class="forecast__day">
+          <span class="forecast__icon">🌧️</span>
+          <span class="forecast__label">Wed</span>
+        </div>
+        <div class="forecast__temps">
+          <span class="forecast__temp-high">25°</span>
+          <div class="forecast__bar"></div>
+          <span class="forecast__temp-low">17°</span>
+        </div>
+        <span class="forecast__precip">70%</span>
+      </div>
+
+      <div class="forecast__item">
+        <div class="forecast__day">
+          <span class="forecast__icon">🌧️</span>
+          <span class="forecast__label">Thu</span>
+        </div>
+        <div class="forecast__temps">
+          <span class="forecast__temp-high">25°</span>
+          <div class="forecast__bar"></div>
+          <span class="forecast__temp-low">17°</span>
+        </div>
+        <span class="forecast__precip">50%</span>
+      </div>
+
+      <div class="forecast__item">
+        <div class="forecast__day">
+          <span class="forecast__icon">🌤️</span>
+          <span class="forecast__label">Fri</span>
+        </div>
+        <div class="forecast__temps">
+          <span class="forecast__temp-high">26°</span>
+          <div class="forecast__bar"></div>
+          <span class="forecast__temp-low">20°</span>
+        </div>
+      </div>
+
+      <div class="forecast__item">
+        <div class="forecast__day">
+          <span class="forecast__icon">☀️</span>
+          <span class="forecast__label">Sat</span>
+        </div>
+        <div class="forecast__temps">
+          <span class="forecast__temp-high">25°</span>
+          <div class="forecast__bar"></div>
+          <span class="forecast__temp-low">18°</span>
+        </div>
+      </div>
+
+      <div class="forecast__item">
+        <div class="forecast__day">
+          <span class="forecast__icon">🌧️</span>
+          <span class="forecast__label">Sun</span>
+        </div>
+        <div class="forecast__temps">
+          <span class="forecast__temp-high">21°</span>
+          <div class="forecast__bar"></div>
+          <span class="forecast__temp-low">13°</span>
+        </div>
+        <span class="forecast__precip">50%</span>
+      </div>
+
+      <div class="forecast__item">
+        <div class="forecast__day">
+          <span class="forecast__icon">🌧️</span>
+          <span class="forecast__label">Mon</span>
+        </div>
+        <div class="forecast__temps">
+          <span class="forecast__temp-high">19°</span>
+          <div class="forecast__bar"></div>
+          <span class="forecast__temp-low">12°</span>
+        </div>
+        <span class="forecast__precip">50%</span>
+      </div>
+
+      <div class="forecast__item">
+        <div class="forecast__day">
+          <span class="forecast__icon">☀️</span>
+          <span class="forecast__label">Tue</span>
+        </div>
+        <div class="forecast__temps">
+          <span class="forecast__temp-high">25°</span>
+          <div class="forecast__bar"></div>
+          <span class="forecast__temp-low">18°</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="current-weather">
+      <div>
+        <h1 class="current-weather__location">Seongnam-si</h1>
+        <div class="current-weather__temperature">21°</div>
+        <div class="current-weather__condition">Partly Cloudy</div>
+        <div class="current-weather__hilo">H:29° L:15°</div>
+      </div>
+
+      <section class="hourly">
+        <p class="hourly__summary">Cloudy conditions from 1AM–9AM, with showers expected at 9AM.</p>
+        <div class="hourly__list">
+          <div class="hourly__item">
+            <div class="hourly__time">Now</div>
+            <div class="hourly__icon">⛅</div>
+            <div class="hourly__temp">21°</div>
+          </div>
+          <div class="hourly__item">
+            <div class="hourly__time">10PM</div>
+            <div class="hourly__icon">🌧️</div>
+            <div class="hourly__temp">21°</div>
+          </div>
+          <div class="hourly__item">
+            <div class="hourly__time">11PM</div>
+            <div class="hourly__icon">🌧️</div>
+            <div class="hourly__temp">19°</div>
+          </div>
+          <div class="hourly__item">
+            <div class="hourly__time">12AM</div>
+            <div class="hourly__icon">🌧️</div>
+            <div class="hourly__temp">19°</div>
+          </div>
+          <div class="hourly__item">
+            <div class="hourly__time">1AM</div>
+            <div class="hourly__icon">🌦️</div>
+            <div class="hourly__temp">19°</div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
