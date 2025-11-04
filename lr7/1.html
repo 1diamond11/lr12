@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Погода в Сонгнам-си</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: url('weather.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      display: flex;
+      gap: 20px;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .forecast-sidebar {
+      width: 250px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 10px;
+      padding: 15px;
+      backdrop-filter: blur(5px);
+    }
+
+    .forecast-title {
+      font-size: 14px;
+      opacity: 0.8;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .forecast-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .day-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .weather-icon {
+      font-size: 24px;
+    }
+
+    .temp-range {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .temp-high {
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .temp-low {
+      font-size: 14px;
+      opacity: 0.7;
+    }
+
+    .temp-bar {
+      height: 4px;
+      width: 60px;
+      background: linear-gradient(to right, #4CAF50, #FFC107, #FF5722);
+      border-radius: 2px;
+    }
+
+    .precip {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+
+    .current-weather {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 30px;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 10px;
+      backdrop-filter: blur(5px);
+    }
+
+    .location {
+      font-size: 28px;
+      font-weight: 300;
+    }
+
+    .temperature {
+      font-size: 72px;
+      font-weight: 300;
+      line-height: 1;
+    }
+
+    .condition {
+      font-size: 18px;
+      opacity: 0.9;
+    }
+
+    .temp-hilo {
+      font-size: 16px;
+      opacity: 0.8;
+    }
+
+    .hourly-forecast {
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 20px;
+      backdrop-filter: blur(5px);
+    }
+
+    .hourly-title {
+      font-size: 14px;
+      opacity: 0.8;
+      margin-bottom: 15px;
+    }
+
+    .hours-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      overflow-x: auto;
+    }
+
+    .hour-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px;
+      min-width: 70px;
+      text-align: center;
+    }
+
+    .hour-time {
+      font-size: 14px;
+      opacity: 0.8;
+      margin-bottom: 8px;
+    }
+
+    .hour-icon {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .hour-temp {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        padding: 10px;
+      }
+
+      .forecast-sidebar {
+        width: 100%;
+        margin-bottom: 20px;
+      }
+
+      .current-weather {
+        padding: 20px 15px;
+      }
+
+      .location {
+        font-size: 22px;
+      }
+
+      .temperature {
+        font-size: 56px;
+      }
+
+      .hours-container {
+        flex-wrap: nowrap;
+        gap: 10px;
+      }
+
+      .hour-item {
+        min-width: 60px;
+        padding: 8px;
+      }
+
+      .hour-time {
+        font-size: 12px;
+      }
+
+      .hour-temp {
+        font-size: 16px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .forecast-item {
+        padding: 8px 0;
+      }
+
+      .temp-high {
+        font-size: 14px;
+      }
+
+      .temp-low {
+        font-size: 12px;
+      }
+
+      .temp-bar {
+        width: 40px;
+      }
+
+      .hour-item {
+        min-width: 50px;
+        padding: 5px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <aside class="forecast-sidebar">
+      <div class="forecast-title">📅 10-DAY FORECAST</div>
+
+      <div class="forecast-item">
+        <div class="day-info">
+          <span class="weather-icon">☀️</span>
+          <span>Today</span>
+        </div>
+        <div class="temp-range">
+          <span class="temp-high">29°</span>
+          <div class="temp-bar"></div>
+          <span class="temp-low">15°</span>
+        </div>
+      </div>
+
+      <div class="forecast-item">
+        <div class="day-info">
+          <span class="weather-icon">🌧️</span>
+          <span>Mon</span>
+        </div>
+        <div class="temp-range">
+          <span class="temp-high">27°</span>
+          <div class="temp-bar"></div>
+          <span class="temp-low">18°</span>
+        </div>
+        <span class="precip">60%</span>
+      </div>
+
+      <div class="forecast-item">
+        <div class="day-info">
+          <span class="weather-icon">🌧️</span>
+          <span>Tue</span>
+        </div>
+        <div class="temp-range">
+          <span class="temp-high">25°</span>
+          <div class="temp-bar"></div>
+          <span class="temp-low">20°</span>
+        </div>
+        <span class="precip">60%</span>
+      </div>
+
+      <div class="forecast-item">
+        <div class="day-info">
+          <span class="weather-icon">🌧️</span>
+          <span>Wed</span>
+        </div>
+        <div class="temp-range">
+          <span class="temp-high">25°</span>
+          <div class="temp-bar"></div>
+          <span class="temp-low">17°</span>
+        </div>
+        <span class="precip">70%</span>
+      </div>
+
+      <div class="forecast-item">
+        <div class="day-info">
+          <span class="weather-icon">🌧️</span>
+          <span>Thu</span>
+        </div>
+        <div class="temp-range">
+          <span class="temp-high">25°</span>
+          <div class="temp-bar"></div>
+          <span class="temp-low">17°</span>
+        </div>
+        <span class="precip">50%</span>
+      </div>
+
+      <div class="forecast-item">
+        <div class="day-info">
+          <span class="weather-icon">🌤️</span>
+          <span>Fri</span>
+        </div>
+        <div class="temp-range">
+          <span class="temp-high">26°</span>
+          <div class="temp-bar"></div>
+          <span class="temp-low">20°</span>
+        </div>
+      </div>
+
+      <div class="forecast-item">
+        <div class="day-info">
+          <span class="weather-icon">☀️</span>
+          <span>Sat</span>
+        </div>
+        <div class="temp-range">
+          <span class="temp-high">25°</span>
+          <div class="temp-bar"></div>
+          <span class="temp-low">18°</span>
+        </div>
+      </div>
+
+      <div class="forecast-item">
+        <div class="day-info">
+          <span class="weather-icon">🌧️</span>
+          <span>Sun</span>
+        </div>
+        <div class="temp-range">
+          <span class="temp-high">21°</span>
+          <div class="temp-bar"></div>
+          <span class="temp-low">13°</span>
+        </div>
+        <span class="precip">50%</span>
+      </div>
+
+      <div class="forecast-item">
+        <div class="day-info">
+          <span class="weather-icon">🌧️</span>
+          <span>Mon</span>
+        </div>
+        <div class="temp-range">
+          <span class="temp-high">19°</span>
+          <div class="temp-bar"></div>
+          <span class="temp-low">12°</span>
+        </div>
+        <span class="precip">50%</span>
+      </div>
+
+      <div class="forecast-item">
+        <div class="day-info">
+          <span class="weather-icon">☀️</span>
+          <span>Tue</span>
+        </div>
+        <div class="temp-range">
+          <span class="temp-high">25°</span>
+          <div class="temp-bar"></div>
+          <span class="temp-low">18°</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="current-weather">
+      <div>
+        <h1 class="location">Seongnam-si</h1>
+        <div class="temperature">21°</div>
+        <div class="condition">Partly Cloudy</div>
+        <div class="temp-hilo">H:29° L:15°</div>
+      </div>
+
+      <section class="hourly-forecast">
+        <div class="hourly-title">Cloudy conditions from 1AM–9AM, with showers expected at 9AM.</div>
+        <div class="hours-container">
+          <div class="hour-item">
+            <div class="hour-time">Now</div>
+            <div class="hour-icon">⛅</div>
+            <div class="hour-temp">21°</div>
+          </div>
+          <div class="hour-item">
+            <div class="hour-time">10PM</div>
+            <div class="hour-icon">🌧️</div>
+            <div class="hour-temp">21°</div>
+          </div>
+          <div class="hour-item">
+            <div class="hour-time">11PM</div>
+            <div class="hour-icon">🌧️</div>
+            <div class="hour-temp">19°</div>
+          </div>
+          <div class="hour-item">
+            <div class="hour-time">12AM</div>
+            <div class="hour-icon">🌧️</div>
+            <div class="hour-temp">19°</div>
+          </div>
+          <div class="hour-item">
+            <div class="hour-time">1AM</div>
+            <div class="hour-icon">🌦️</div>
+            <div class="hour-temp">19°</div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
